@@ -1,8 +1,9 @@
 import json
 import re
 import nltk
-from nltk import ngrams
-from nltk import bigrams, trigrams
+from nltk import bigrams, trigrams, ngrams
+from collections import defaultdict
+import random
 
 # ============Beginning of Part A============
 
@@ -29,7 +30,7 @@ def load_articles():
             tmp_article['content'] = re.sub(r'\b\d+\b', '', tmp_article['content'], flags=re.MULTILINE)
             articles.append(tmp_article)
             i = i + 1
-            if (i>10):
+            if (i>16000):
                 break
 
 
@@ -115,8 +116,52 @@ def analyze_articles():
 
 # ============Beginning of Part C============
 def trigram_lang_model():
-    from nltk import bigrams, trigrams
+    model = []
 
+    first_16000_trigrams = trigrams(lemmatised[:1600], pad_right=True, pad_left=True)
+    for f in first_16000_trigrams:
+        model.append(f)
+    return model
+
+
+def sentence_10_words():
+    print(1)
+    first_16000_trigrams = trigrams(lemmatised[:1600], pad_right=True, pad_left=True)
+    model = defaultdict(lambda: defaultdict(lambda: 0))
+    #first_16000_bigrams = bigrams(lemmatised[:1600], pad_right=True, pad_left=True)
+    print(2)
+    #for sentence in lemmatised[:1600]:
+    #for w1, w2, w3 in trigrams(sentence, pad_right=True, pad_left=True):
+    for w1, w2, w3 in trigrams(lemmatised[:1600], pad_right=True, pad_left=True):
+        model[(w1, w2)][w3] += 1
+    print(3)
+    # Let's transform the counts to probabilities
+    for w1_w2 in model:
+        total_count = float(sum(model[w1_w2].values()))
+        for w3 in model[w1_w2]:
+            model[w1_w2][w3] /= total_count
+    print(4)
+    text = ['is', 'this']
+    #text = ['grew', 'up']
+
+    sentence_finished = False
+
+    while not sentence_finished and len(text) < 12:
+        r = random.random()
+        accumulator = .0
+
+        for word in model[tuple(text[-2:])].keys():
+            accumulator += model[tuple(text[-2:])][word]
+
+            if accumulator >= r:
+                text.append(word)
+                break
+
+        if text[-2:] == [None, None]:
+            sentence_finished = True
+
+    print(' '.join([t for t in text if t]))
+    print(5)
 
 # ============End of Part C============
 
@@ -127,12 +172,13 @@ def main():
     #print(num_tokens())
     #print(vocab_size())
     #print(top25())
-    load_words()
-    #print('positive')
-    #print (num_pos_words())
-    #print('negative')
-    #print(num_neg_words())
-    print(analyze_articles())
+    #load_words()
+    #print('positive, negative')
+    #print (analyze_articles())
+    #print(analyze_articles())
+    #print(trigram_lang_model())
+    print(sentence_10_words())
+    #print(lemmatised)
 
 
 main()
