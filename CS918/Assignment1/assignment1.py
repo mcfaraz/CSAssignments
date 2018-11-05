@@ -1,10 +1,11 @@
 import json
 import re
-import nltk
-from nltk import trigrams
 from collections import defaultdict
 import operator
 import math
+import nltk
+from nltk import trigrams
+nltk.data.path.append('/modules/cs918/nltk_data/')
 
 # ============Beginning of Part A============
 
@@ -15,12 +16,13 @@ lemmatised_after_16000 = []  # Lemmatised words for the rest of the articles
 pos_words = {}  # Positive words for sentiment analysis
 neg_words = {}  # Negative words for sentiment analysis
 
+# The signal-news1 folder must be located in the same directory as this file
 with open('signal-news1/signal-news1.jsonl', 'r') as f:
     for line in f:
         tmp_article = {'content': json.loads(line)['content']}
         tmp_article['content'] = tmp_article['content'].lower()
         # Remove Url
-        tmp_article['content'] = re.sub(r'http[s]?:\/\/(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*(),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', '', tmp_article['content'], flags=re.MULTILINE)
+        tmp_article['content'] = re.sub(r'(http)[s]?:\/\/(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*(),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', '', tmp_article['content'], flags=re.MULTILINE)
         # Remove non-alphanumeric except spaces
         tmp_article['content'] = re.sub(r'[^a-zA-Z\d\s:]', '', tmp_article['content'], flags=re.MULTILINE)
         # Remove single characters
@@ -55,7 +57,8 @@ print('Vocabulary Size (V): ', len(set(lemmatised)))
 
 # Calculate top 25 trigrams
 tri = trigrams(lemmatised)
-# top = tri.most_common(25)
+#fd = nltk.FreqDist(tri)
+#top = fd.most_common(25)
 dist = {}
 for g in tri:
     if g in dist:
