@@ -20,7 +20,7 @@ with open('signal-news1/signal-news1.jsonl', 'r') as f:
         tmp_article = {'content': json.loads(line)['content']}
         tmp_article['content'] = tmp_article['content'].lower()
         # Remove Url
-        tmp_article['content'] = re.sub(r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', '', tmp_article['content'], flags=re.MULTILINE)
+        tmp_article['content'] = re.sub(r'http[s]?:\/\/(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*(),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', '', tmp_article['content'], flags=re.MULTILINE)
         # Remove non-alphanumeric except spaces
         tmp_article['content'] = re.sub(r'[^a-zA-Z\d\s:]', '', tmp_article['content'], flags=re.MULTILINE)
         # Remove single characters
