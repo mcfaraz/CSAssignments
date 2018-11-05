@@ -9,11 +9,11 @@ import math
 # ============Beginning of Part A============
 
 articles = []
-lemmatised = []
-lemmatised_first_16000 = []
-lemmatised_after_16000 = []
-pos_words = {}
-neg_words = {}
+lemmatised = []  # All of lemmatised words
+lemmatised_first_16000 = []  # Lemmatised words for the first 16000 articles
+lemmatised_after_16000 = []  # Lemmatised words for the rest of the articles
+pos_words = {}  # Positive words for sentiment analysis
+neg_words = {}  # Negative words for sentiment analysis
 
 with open('signal-news1/signal-news1.jsonl', 'r') as f:
     for line in f:
@@ -35,7 +35,7 @@ for article in articles:
     article['lemmatised'] = {}
     articles_count += 1
     for word in words:
-        lemm = nltk.stem.WordNetLemmatizer().lemmatize(word)
+        lemm = nltk.stem.WordNetLemmatizer().lemmatize(word)  # Lemmatise the word
         if articles_count <= 16000:
             lemmatised_first_16000.append(lemm)
         else:
@@ -53,7 +53,7 @@ lemmatised = lemmatised_first_16000 + lemmatised_after_16000
 print('Number of Tokens (N): ', len(lemmatised))
 print('Vocabulary Size (V): ', len(set(lemmatised)))
 
-# Calculating top 25 trigrams
+# Calculate top 25 trigrams
 tri = trigrams(lemmatised)
 # top = tri.most_common(25)
 dist = {}
@@ -63,7 +63,7 @@ for g in tri:
     else:
         dist[g] = 1
 top25 = sorted(dist.items(), key=lambda kv: kv[1], reverse=True)[:25]  # Sorting trigrams and selecting top 25
-print('Top 25 trigrams: ', [g[0] for g in top25])
+print('Top 25 trigrams: ', [g[0] for g in top25])  # Selecting the key (Trigram tuple). The frequency is g[1]
 
 # Load positive and negative words
 with open('signal-news1/opinion-lexicon-English/positive-words.txt') as f:
@@ -75,6 +75,7 @@ with open('signal-news1/opinion-lexicon-English/negative-words.txt') as f:
         neg_words[line.strip()] = -1
 
 
+# Count positive words in a word set
 def count_pos_words(words_set):
     num = 0
     for w in words_set:
@@ -83,6 +84,7 @@ def count_pos_words(words_set):
     return num
 
 
+# Count negative words in a word set
 def count_neg_words(words_set):
     num = 0
     for w in words_set:
