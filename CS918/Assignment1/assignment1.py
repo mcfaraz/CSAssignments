@@ -62,8 +62,8 @@ for g in tri:
         dist[g] += 1
     else:
         dist[g] = 1
-top25 = sorted(dist.items(), key=lambda kv: kv[1], reverse=True)[:25]  # Sorting trigrams and selecting top 25
-print('Top 25 trigrams: ', [g[0] for g in top25])  # Selecting the key (Trigram tuple). The frequency is g[1]
+top25 = sorted(dist.items(), key=lambda kv: kv[1], reverse=True)[:25]  # Sort trigrams and pick top 25
+print('Top 25 trigrams: ', [g[0] for g in top25])  # Select the key (Trigram tuple). The frequency is g[1]
 
 # Load positive and negative words
 with open('signal-news1/opinion-lexicon-English/positive-words.txt') as f:
@@ -75,7 +75,7 @@ with open('signal-news1/opinion-lexicon-English/negative-words.txt') as f:
         neg_words[line.strip()] = -1
 
 
-# Count positive words in a word set
+# Count positive words in a lemmatised word set
 def count_pos_words(words_set):
     num = 0
     for w in words_set:
@@ -84,7 +84,7 @@ def count_pos_words(words_set):
     return num
 
 
-# Count negative words in a word set
+# Count negative words in a lemmatised word set
 def count_neg_words(words_set):
     num = 0
     for w in words_set:
@@ -93,8 +93,8 @@ def count_neg_words(words_set):
     return num
 
 
-num_pos_articles = 0
-num_neg_articles = 0
+total_pos_articles = 0
+total_neg_articles = 0
 total_pos_words = 0
 total_neg_words = 0
 
@@ -105,21 +105,21 @@ for article in articles:
     total_neg_words += num_neg_words
 
     if num_pos_words > num_neg_words:
-        num_pos_articles += 1
+        total_pos_articles += 1
     elif num_pos_words < num_neg_words:
-        num_neg_articles += 1
+        total_neg_articles += 1
 
 print('Number of positive words: ', total_pos_words)
 print('Number of negative words: ', total_neg_words)
-print('Number of positive articles: ', num_pos_articles)
-print('Number of negative articles: ', num_neg_articles)
+print('Number of positive articles: ', total_pos_articles)
+print('Number of negative articles: ', total_neg_articles)
 
 # ============End of Part B============
 
 # ============Beginning of Part C============
 
 # Generate a 10 word sentence
-model = defaultdict(lambda: defaultdict(lambda: 0.01))  # For smoothing
+model = defaultdict(lambda: defaultdict(lambda: 0.01))  # For smoothing. Also 0 cannot be used with math.log
 first_16000_trigrams = trigrams(lemmatised_first_16000, pad_right=True, pad_left=True)
 
 for w1, w2, w3 in first_16000_trigrams:
@@ -138,12 +138,13 @@ while len(sentence) < 10:
 print('Generated 10 word sentence:', ' '.join([w for w in sentence if w]))
 
 # Calculate the perplexity
-P = 0
-N = 0
+P_log = float(0)  # Logs of probabilities
+N = 0  # Count
 for w1, w2, w3 in trigrams(lemmatised_after_16000, pad_left=True, pad_right=True):
     N += 1
-    P += math.log2(model[(w1, w2)][w3])
-perplexity = pow((1 / abs(P)), 1 / float(N))
+    P_log += math.log2(model[(w1, w2)][w3])
+
+perplexity = pow(2, -P_log/N)
 print("Perplexity: ", perplexity)
 
 # ============End of Part C============
