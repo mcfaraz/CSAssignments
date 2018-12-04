@@ -5,7 +5,7 @@ import operator
 import math
 import nltk
 from nltk import trigrams
-nltk.data.path.append('/modules/cs918/nltk_data/')
+nltk.data.path.append('/modules/cs918/nltk_data/')  # For DCS Workstations
 
 # ============Beginning of Part A============
 

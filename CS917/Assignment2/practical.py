@@ -1,3 +1,8 @@
+'''
+Title: CS917 Assignment 2 - Question 8
+Author: Faraz Taheri
+'''
+
 import itertools
 import collections
 
@@ -139,25 +144,25 @@ class Maze:
         in the order in which the coordinates must be followed
         If no route is found, return an empty list
         """
-        path = self.bfs((x1, y1), (x2, y2))
+        path = self.BFS((x1, y1), (x2, y2))
         if path is not None and len(path) > 0:
             return path
         else:
             return []
 
-    def bfs(self, start, end):
+    def BFS(self, start, end):
         queue = collections.deque([[start]])  # A double-ended queue to store future nodes to visit
-        seen = set([start])  # Set of visited notes
+        visited = set([start])  # Set of visited notes
         while queue:  # While there are nodes to visit
             path = queue.popleft()  # Retrieve the first node to visit
             x, y = path[-1]  # Get the coordinates of the first node
             if y == end[1] and x == end[0]:  # Check whether the destination is reached
                 return path
             for x, y in ((x+1,y), (x-1,y), (x,y+1), (x,y-1)):  # Loop through four adjacent neighbours (East, West, South, North)
-                if (0 <= y <= self.maxHeight and 0 <= x <= self.maxWidth and (x,y) in self.grid and (x, y) not in seen
+                if (0 <= y <= self.maxHeight and 0 <= x <= self.maxWidth and (x, y) not in visited and (x,y) in self.grid
                         and self.grid[(x,y)] == 0):  # Check if the neighbour exists and is a hole
                         queue.append(path + [(x, y)])
-                        seen.add((x, y))
+                        visited.add((x, y))
 
 
 def morseCodeTest():
